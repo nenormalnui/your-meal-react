@@ -11,7 +11,11 @@ export const productRequestAsync = createAsyncThunk(
   (category) =>
     fetch(`${API_URI}${POSTFIX}?category=${category}`)
       .then((req) => req.json())
-      .catch((error) => {{ error }})
+      .catch((error) => {
+        {
+          error;
+        }
+      })
 );
 
 const productSlice = createSlice({
