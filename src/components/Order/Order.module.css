@@ -108,6 +108,13 @@
     margin-bottom: 8px;
 }
 
+.submit:disabled {
+    cursor: default;
+    background-color: #B1B1B1;
+    color: #000000;
+    opacity: 0.5;
+}
+
 .apeal {
     display: flex;
     align-items: center;
@@ -176,7 +183,7 @@
         font-size: 12px;
     }
 
-    .item  {
+    .item {
         padding: 15px 0;
     }
 
