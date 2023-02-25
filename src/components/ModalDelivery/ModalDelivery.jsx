@@ -2,8 +2,13 @@ import classNames from "classnames";
 import style from "./ModalDelivery.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../../store/modalDelivery/modalDeliverySlice.js";
-import { submitForm, updateFormValue } from "../../store/form/formSlice.js";
-
+import {
+  changeTouch,
+  submitForm,
+  updateFormValue,
+  validateForm,
+} from "../../store/form/formSlice.js";
+import IMask from "imask";
 export const ModalDelivery = () => {
   const { isOpen } = useSelector((state) => state.modal);
   const form = useSelector((state) => state.form);
@@ -11,18 +16,46 @@ export const ModalDelivery = () => {
 
   const dispatch = useDispatch();
 
+  // const handleInputChange = (event) => {
+  //   dispatch(
+  //     updateFormValue({
+  //       field: event.target.name,
+  //       value: event.target.value,
+  //     })
+  //   );
+  //   dispatch(validateForm());
+  // };
   const handleInputChange = (event) => {
-    dispatch(
-      updateFormValue({
-        field: event.target.name,
-        value: event.target.value,
-      })
-    );
+    if (event.target.name === "phone") {
+      const phoneMask = IMask.createMask({
+        mask: "+{7}(000)000-00-00",
+      });
+      const unmaskedValue = phoneMask.resolve(event.target.value);
+      dispatch(
+          updateFormValue({
+            field: event.target.name,
+            value: unmaskedValue,
+          })
+      );
+    } else {
+      dispatch(
+          updateFormValue({
+            field: event.target.name,
+            value: event.target.value,
+          })
+      );
+    }
+    dispatch(validateForm());
   };
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(submitForm({ ...form, orderList }));
+    dispatch(validateForm());
+    dispatch(changeTouch());
+    if (Object.keys(form.errors).length === 0 && form.touch) {
+      dispatch(submitForm({ ...form, orderList }));
+    }
   };
 
   return (
@@ -117,6 +150,8 @@ export const ModalDelivery = () => {
             <button className={style.submit} type="submit" form="delivery">
               Оформить
             </button>
+            {form.touch &&
+              Object.entries(form.errors).map(([key, err]) => <p key={key}>{err}</p>)}
           </div>
 
           <button

@@ -193,6 +193,7 @@
 @media (min-width: 480px) {
   .modal {
     padding: 10px;
+    z-index: 2;
   }
 
   .mdelivery {
@@ -222,7 +223,7 @@
   .mdelivery {
     max-width: 684px;
     padding: 44px 24px 24px 366px;
-    background: url('../../../public/img/donut.svg') 19px center, linear-gradient(to right, #FFAB08 50%, #fff 50%);
+    background: url('./img/donut.svg') 19px center, linear-gradient(to right, #FFAB08 50%, #fff 50%);
     background-size: 302px, auto;
     background-repeat: no-repeat;
   }

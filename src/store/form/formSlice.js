@@ -11,6 +11,9 @@ const initialState = {
   address: "",
   floor: "",
   intercom: "",
+  error: null,
+  errors: {},
+  touch: false,
 };
 
 export const submitForm = createAsyncThunk(
@@ -45,6 +48,16 @@ const formSlice = createSlice({
     updateFormValue: (state, action) => {
       state[action.payload.field] = action.payload.value;
     },
+    setError: (state, action) => ({
+      ...state,
+      errors: action.payload,
+    }),
+    clearError: (state) => {
+      state.error = {};
+    },
+    changeTouch: (state) => {
+      state.touch = true;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -64,5 +77,39 @@ const formSlice = createSlice({
   },
 });
 
-export const { updateFormValue } = formSlice.actions;
+export const { updateFormValue, setError, clearError, changeTouch } =
+  formSlice.actions;
 export default formSlice.reducer;
+export const validateForm = () => (dispatch, getState) => {
+  const form = getState().form;
+  const errors = {};
+
+  if (!form.name) {
+    errors.name = "Поле имя должно быть заполнено";
+  }
+  if (!form.phone) {
+    errors.phone = "Поле телефон должно быть заполнено";
+  } else if (form.phone.replace(/\D/g, "").length !== 11) {
+    errors.phone = "Телефон должен состоять из 11 цифр";
+  }
+  if (!form.address && form.format === "delivery") {
+    errors.address = "Поле адрес должно быть заполнено";
+  }
+  if (!form.floor && form.format === "delivery") {
+    errors.floor = "Поле этаж должно быть заполнено";
+  }
+  if (!form.intercom && form.format === "delivery") {
+    errors.intercom = "Поле домофон должно быть заполнено";
+  }
+  if (form.format === "pickup") {
+    dispatch(updateFormValue({ field: "address", value: "" }));
+    dispatch(updateFormValue({ field: "floor", value: "" }));
+    dispatch(updateFormValue({ field: "intercom", value: "" }));
+  }
+
+  if (Object.keys.length) {
+    dispatch(setError(errors));
+  } else {
+    dispatch(clearError());
+  }
+};
